@@ -1,0 +1,103 @@
+<?php 
+include "config.php"; // Include your database connection file
+
+$id = null;
+if (isset($_GET['id'])) {
+    $id = $_GET['id']; // Retrieve user ID from query string
+}
+
+$row = []; // Initialize $row array to store user data
+
+// Fetch user details based on the ID if it's set
+if ($id !== null) {
+    $sql = "SELECT * FROM user WHERE user_id=$id";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+    } else {
+        echo "User not found.";
+    }
+}
+
+// Process form submission
+if (isset($_POST['update'])) {
+    $username = $_POST['username'];
+    $userage = $_POST['userage'];
+    $useremail = $_POST['useremail'];
+    $usergender = $_POST['usergender'];
+
+    // Update user record in the database
+    $update_sql = "UPDATE user SET user_name='$username', user_age='$userage', user_email='$useremail', user_gender='$usergender' WHERE user_id=$id";
+
+    if ($conn->query($update_sql) === TRUE) {
+        // Fetch updated user details after successful update
+        $sql = "SELECT * FROM user WHERE user_id=$id";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc(); // Update $row with the new values
+        echo "<h1 class='text-center text-primary my-5'>Record updated successfully!</h1>";
+
+    } else {
+        echo "Error updating record: " . $conn->error;
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    
+<div class="container mt-5">
+    <h2 class="text-center my-5">Edit User</h2>
+    <form method="POST" action="" class="mb-5">
+        <input type="hidden" name="id" value="<?= $id ?>">
+        <div class="row mb-3">
+            <label for="name" class="col-sm-2 col-form-label">User Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="name" name="username" value="<?= isset($row['user_name']) ? $row['user_name'] : '' ?>">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="age" class="col-sm-2 col-form-label">Age</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="age" name="userage" min="0" value="<?= isset($row['user_age']) ? $row['user_age'] : '' ?>">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="email" name="useremail" value="<?= isset($row['user_email']) ? $row['user_email'] : '' ?>">
+            </div>
+        </div>
+        <fieldset class="row mb-3">
+            <legend class="col-form-label col-sm-2 pt-0">Gender</legend>
+            <div class="col-sm-10">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="usergender" id="opt1" value="male" <?= (isset($row['user_gender']) && $row['user_gender'] == 'male') ? 'checked' : '' ?>>
+                    <label class="form-check-label" for="opt1">
+                        Male
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="usergender" id="opt2" value="female" <?= (isset($row['user_gender']) && $row['user_gender'] == 'female') ? 'checked' : '' ?>>
+                    <label class="form-check-label" for="opt2">
+                        Female
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+        <button type="submit" name="update" class="btn btn-primary">Update</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
