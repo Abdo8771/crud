@@ -7,8 +7,8 @@ $dbName="php_intern";
 
 $conen=new mysqli($server,$user_name,$password,$dbName);
 
-if ($conen ->connect_error )
+if ($conn ->connect_error )
  {
-    die("Connection_faild".$conen->connect_error);
+    die("Connection_faild".$conn->connect_error);
 } 
 
