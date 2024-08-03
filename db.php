@@ -1,6 +1,6 @@
 <?php
 $server="locahost";
-$user_name="root";
+$userName="root";
 $password="";
 $dbName="php_intern";
   
